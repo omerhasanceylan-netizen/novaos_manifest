@@ -8,4 +8,6 @@
 
   <!-- Linux Cekirdek (Kernel) Kaynaklari -->
   <project path="kernel/xiaomi/garden" name="dandelion64-Archives/android_kernel_xiaomi_dandelion" remote="github" revision="main" />
+  <!-- NovaOS Ana Vendor ve Navo The Cat -->
+  <project path="vendor/novaos" name="omerhasanceylan-netizen/vendor_novaos" remote="github" revision="main" />
 </manifest>
