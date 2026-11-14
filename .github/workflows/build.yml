@@ -14,7 +14,7 @@ jobs:
 
       - name: AOSP Derleme Ortamini Kur
         run: |
-          git clone https://github.com
+          git clone https://github.com/akhilnarang/scripts
           bash scripts/setup/android_build_env.sh
 
       - name: NovaOS Kaynaklarini ve Manifesti Cek
