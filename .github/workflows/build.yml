@@ -5,28 +5,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Disk Alanini Temizle
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
           df -h
 
-      - name: Derleme Araclarini Kur
+      - name: AOSP Derleme Ortamini Kur
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3 bc ccache
-          mkdir -p ~/bin
-          curl -s https://://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-          chmod a+x ~/bin/repo
+          git clone https://github.com
+          bash scripts/setup/android_build_env.sh
 
       - name: NovaOS Kaynaklarini ve Manifesti Cek
         run: |
-          export PATH=~/bin:$PATH
           mkdir -p ~/NovaOS && cd ~/NovaOS
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
-          repo init --depth=1 -u https://://github.com/LineageOS/android.git -b lineage-21.0 --git-lfs
+          repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0 --git-lfs
           mkdir -p .repo/local_manifests
           cp $GITHUB_WORKSPACE/novaos_garden.xml .repo/local_manifests/
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
