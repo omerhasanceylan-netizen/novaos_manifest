@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <!-- NovaOS Resmi Xiaomi Garden (Redmi 10A) Cihaz Agaci -->
+  <project path="device/xiaomi/garden" name="omerhasanceylan-netizen/device_xiaomi_garden" remote="github" revision="main" />
+
+  <!-- Redmi 10A / Blossom Ozel Suruculeri (Vendor Blobs) -->
+  <project path="vendor/xiaomi/blossom" name="Redmi-MT6765/vendor_xiaomi_dandelion" remote="github" revision="eleven" />
+
+  <!-- Linux Cekirdek (Kernel) Kaynaklari -->
+  <project path="kernel/xiaomi/garden" name="dandelion64-Archives/android_kernel_xiaomi_dandelion" remote="github" revision="main" />
+</manifest>
