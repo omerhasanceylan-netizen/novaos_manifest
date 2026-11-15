@@ -1,4 +1,4 @@
-name: NovaOS 1.0 Beta QPR1 Build
+name: NovaOS 1.1 Beta (Potato Fries) Build
 
 on:
   workflow_dispatch:
@@ -7,6 +7,9 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+      - name: Depoyu Cek
+        uses: actions/checkout@v4
+
       - name: Disk Alanini Temizle
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
@@ -14,7 +17,7 @@ jobs:
 
       - name: AOSP Derleme Ortamini Kur
         run: |
-          git clone https://github.com/akhilnarang/scripts
+          git clone https://github.com
           bash scripts/setup/android_build_env.sh
 
       - name: NovaOS Kaynaklarini ve Manifesti Cek
@@ -22,12 +25,12 @@ jobs:
           mkdir -p ~/NovaOS && cd ~/NovaOS
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
-          repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0 --git-lfs
+          repo init --depth=1 -u https://github.com -b lineage-21.0 --git-lfs
           mkdir -p .repo/local_manifests
           cp $GITHUB_WORKSPACE/novaos_garden.xml .repo/local_manifests/
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-      - name: NovaOS 1.0 Beta QPR1 Derle
+      - name: NovaOS 1.1 Beta (Potato Fries) Derle
         run: |
           cd ~/NovaOS
           source build/envsetup.sh
