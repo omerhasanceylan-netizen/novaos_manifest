@@ -1,4 +1,4 @@
-name: NovaOS 1.0 Beta QPR1 Build
+name: NovaOS 1.0 Beta QPR1 GSI Build (SM-X130)
 
 on:
   workflow_dispatch:
@@ -22,32 +22,35 @@ jobs:
       - name: AOSP Derleme Ortamini Kur
         run: |
           sudo apt-get update
-          sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3 bc ccache repo
+          sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3 bc ccache repo xz-utils
 
-      - name: NovaOS Kaynaklarini ve Manifesti Cek
+      - name: LineageOS 21 Treble GSI Kaynaklarini Cek
         run: |
           cd /mnt/NovaOS
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
-          repo init --depth=1 -u https:///github.com/LineageOS/android.git -b lineage-21.0
+          repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0
           mkdir -p .repo/local_manifests
-          cp $GITHUB_WORKSPACE/novaos_garden.xml .repo/local_manifests/
+          git clone https://github.com/AndyYan/lineage_build_unified.git -b lineage-21-light
+          cp lineage_build_unified/local_manifests_treble/*.xml .repo/local_manifests/
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
-          rm -rf .repo/projects/*/.git/objects/pack/*.tmp
+          bash lineage_build_unified/apply-patches.sh lineage_build_unified/patches_treble_prerequisite
+          bash lineage_build_unified/apply-patches.sh lineage_build_unified/patches_treble_td
 
-      - name: NovaOS 1.0 Beta QPR1 Derle
+      - name: Galaxy Tab A11 (arm64-ab) GSI Imaji Derle
         run: |
           cd /mnt/NovaOS
           source build/envsetup.sh
-          lunch novaos_garden-userdebug
-          mka bacon -j$(nproc --all)
+          lunch treble_arm64_bvN-userdebug
+          make systemimage -j$(nproc --all)
+          xz -c -T0 -6 out/target/product/tdgsi_arm64_ab/system.img > out/target/product/tdgsi_arm64_ab/NovaOS-1.0-Beta-QPR1-arm64-ab-SM-X130.img.xz
 
-      - name: ROM Dosyasini GitHub Release Olarak Yukle
+      - name: GSI Imajini GitHub Release Olarak Yukle
         uses: softprops/action-gh-release@v2
         if: success()
         with:
-          tag_name: v1.0-beta-${{ github.run_number }}
-          name: NovaOS 1.0 Beta QPR1 (#${{ github.run_number }})
-          files: /mnt/NovaOS/out/target/product/garden/*.zip
+          tag_name: v1.0-gsi-${{ github.run_number }}
+          name: NovaOS 1.0 Beta QPR1 GSI SM-X130 (#${{ github.run_number }})
+          files: /mnt/NovaOS/out/target/product/tdgsi_arm64_ab/*.img.xz
           draft: false
           prerelease: true
