@@ -10,9 +10,13 @@ jobs:
       - name: Depoyu Cek
         uses: actions/checkout@v4
 
-      - name: Disk Alanini Temizle
+      - name: Disk Alanini Temizle ve Hazirla
         run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force
+          sudo apt-get clean
+          sudo mkdir -p /mnt/NovaOS
+          sudo chown -R $USER:$USER /mnt/NovaOS
           df -h
 
       - name: AOSP Derleme Ortamini Kur
@@ -22,17 +26,18 @@ jobs:
 
       - name: NovaOS Kaynaklarini ve Manifesti Cek
         run: |
-          mkdir -p ~/NovaOS && cd ~/NovaOS
+          cd /mnt/NovaOS
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
-          repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0
+          repo init --depth=1 -u https://github.com -b lineage-21.0
           mkdir -p .repo/local_manifests
           cp $GITHUB_WORKSPACE/novaos_garden.xml .repo/local_manifests/
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
+          rm -rf .repo/projects/*/.git/objects/pack/*.tmp
 
       - name: NovaOS 1.0 Beta QPR1 Derle
         run: |
-          cd ~/NovaOS
+          cd /mnt/NovaOS
           source build/envsetup.sh
           lunch novaos_garden-userdebug
           mka bacon -j$(nproc --all)
