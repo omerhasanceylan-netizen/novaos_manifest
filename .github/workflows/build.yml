@@ -29,8 +29,10 @@ jobs:
           cd /mnt/NovaOS
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
-          repo init --depth=1 -u https://github.com/TrebleDroid/treble_manifest.git -b android-14.0
+          repo init --depth=1 --git-lfs -u https://android.googlesource.com/platform/manifest -b android-14.0.0_r67
+          git clone https://github.com/TrebleDroid/treble_manifest.git -b android-14.0 .repo/local_manifests
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
+          (cd device/phh/treble && bash generate.sh)
 
       - name: Galaxy Tab A11 (arm64-ab) GSI Imaji Derle
         run: |
