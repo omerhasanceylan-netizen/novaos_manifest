@@ -12,10 +12,10 @@ jobs:
 
       - name: Disk Alanini Temizle ve Hazirla
         run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache /usr/local/share/boost /usr/local/aws-cli /usr/local/julia*
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache /usr/local/share/boost /usr/local/aws-cli /usr/local/julia* /usr/local/share/chromium /usr/local/lib/node_modules
           sudo docker image prune --all --force
           sudo apt-get clean
-          sudo mkdir -p /mnt/NovaOS
+          sudo mkdir -p /mnt/NovaOS/tmp /mnt/NovaOS/src
           sudo chown -R $USER:$USER /mnt/NovaOS
           df -h
 
@@ -26,17 +26,20 @@ jobs:
 
       - name: TrebleDroid GSI Kaynaklarini Cek
         run: |
-          cd /mnt/NovaOS
+          export TMPDIR=/mnt/NovaOS/tmp
+          cd /mnt/NovaOS/src
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
-          repo init --depth=1 -u https://android.googlesource.com/platform/manifest -b android-14.0.0_r67
+          repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0
           git clone https://github.com/TrebleDroid/treble_manifest.git -b android-14.0 .repo/local_manifests
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
+          repo sync -c -j$(bproc --all 2>/dev/null || nproc) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
+          rm -rf .repo/projects/*/.git/objects/pack/*.tmp
           (cd device/phh/treble && bash generate.sh)
 
       - name: Galaxy Tab A11 (arm64-ab) GSI Imaji Derle
         run: |
-          cd /mnt/NovaOS
+          export TMPDIR=/mnt/NovaOS/tmp
+          cd /mnt/NovaOS/src
           source build/envsetup.sh
           lunch treble_arm64_bvN-userdebug
           make systemimage -j$(nproc --all)
@@ -47,7 +50,7 @@ jobs:
         if: success()
         with:
           tag_name: v1.0-gsi-${{ github.run_number }}
-          name: NovaOS 1.0 Beta QPR1 GSI SM-X130 (#${{ github.run_number }})
-          files: /mnt/NovaOS/out/target/product/tdgsi_arm64_ab/*.img.xz
+          name: NovaOS 1.0 Beta QPR1 GRsI SM-X130 (#${{ github.run_number }})
+          files: /mnt/NovaOS/src/out/target/product/tdgsi_arm64_ab/*.img.xz
           draft: false
           prerelease: true
