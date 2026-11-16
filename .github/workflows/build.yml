@@ -41,3 +41,13 @@ jobs:
           source build/envsetup.sh
           lunch novaos_garden-userdebug
           mka bacon -j$(nproc --all)
+
+      - name: ROM Dosyasini GitHub Release Olarak Yukle
+        uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          tag_name: v1.0-beta-${{ github.run_number }}
+          name: NovaOS 1.0 Beta QPR1 (#${{ github.run_number }})
+          files: /mnt/NovaOS/out/target/product/garden/*.zip
+          draft: false
+          prerelease: true
