@@ -31,7 +31,7 @@ jobs:
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
           repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0
-          git clone https://github.com/TrebleDroid/treble_manifest.git -b android-14.0 .repo/local_manifests && sed -i 's/"github"/"github-td"/g' .repo/local_manifests/*.xml && sed -i "/remove-project/d" .repo/local_manifests/*.xml
+          git clone https://github.com/TrebleDroid/treble_manifest.git -b android-14.0 .repo/local_manifests && sed -i 's/"github"/"github-td"/g' .repo/local_manifests/*.xml && sed -i "/remove-project/d" .repo/local_manifests/*.xml && python3 -c 'import glob,xml.etree.ElementTree as ET;m=ET.parse(".repo/manifest.xml").getroot();ps={p.get("path")refs for p in m.findall("project")};for f in glob.glob(".repo/local_manifests/*.xml"):t=ET.parse(f);r=t.getroot();[r.remove(p) for p in list(r.findall("project")) if p.get("path") in ps];t.write(f)'
           repo sync -c -j$(bproc --all 2>/dev/null || nproc) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
           rm -rf .repo/projects/*/.git/objects/pack/*.tmp
           (cd device/phh/treble && bash generate.sh)
