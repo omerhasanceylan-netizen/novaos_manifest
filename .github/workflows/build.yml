@@ -31,7 +31,7 @@ jobs:
           git config --global user.name "omerhasanceylan-netizen"
           git config --global user.email "omerhasanceylan@gmail.com"
           repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-21.0
-          git clone https://github.com/TrebleDroid/treble_manifest.git -b android-14.0 .repo/local_manifests
+          git clone https://github.com/TrebleDroid/treble_manifest.git -b android-14.0 .repo/local_manifests && sed -i 's/"github"/"github-td"/g' .repo/local_manifests/*.xml
           repo sync -c -j$(bproc --all 2>/dev/null || nproc) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
           rm -rf .repo/projects/*/.git/objects/pack/*.tmp
           (cd device/phh/treble && bash generate.sh)
